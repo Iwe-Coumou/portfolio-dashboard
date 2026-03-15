@@ -1,6 +1,6 @@
 # Finance Dashboard
 
-A portfolio analytics dashboard built with Streamlit, powered by the [Finance API]([https://github.com/Iwe-Coumou/finance-backend]).
+A portfolio analytics dashboard built with Streamlit, powered by the [Finance API](https://github.com/Iwe-Coumou/finance-backend).
 
 ## Overview
 
