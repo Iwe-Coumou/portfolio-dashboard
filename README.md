@@ -59,7 +59,7 @@ Scrollable workflow page for simulating portfolio changes. Uses session state to
 
 ### Requirements
 - Python 3.12+
-- Finance API running (see [finance-api](link-to-your-api-repo))
+- Finance API running (see [finance-api]((https://github.com/Iwe-Coumou/finance-backend))
 
 ### Installation
 ```bash
