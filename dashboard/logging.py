@@ -1,0 +1,64 @@
+# dashboard/logger.py
+import logging
+import os
+import sys
+
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+LOG_DIR = os.path.join(BASE_DIR, "logs")
+os.makedirs(LOG_DIR, exist_ok=True)
+
+_configured = False
+
+def _configure_root():
+    global _configured
+    if _configured:
+        return
+
+    root = logging.getLogger()
+    root.setLevel(logging.DEBUG)
+
+    formatter = logging.Formatter(
+        "%(asctime)s | %(levelname)-8s | %(name)s | %(message)s",
+        datefmt="%Y-%m-%d %H:%M:%S",
+    )
+
+    stdout = logging.StreamHandler(sys.stdout)
+    stdout.setLevel(logging.INFO)
+    stdout.setFormatter(formatter)
+
+    debug = logging.FileHandler(os.path.join(LOG_DIR, "debug.log"), mode="w")
+    debug.setLevel(logging.DEBUG)
+    debug.setFormatter(formatter)
+
+    api = logging.FileHandler(os.path.join(LOG_DIR, "api.log"), mode="w")
+    api.setLevel(logging.DEBUG)
+    api.addFilter(_NameFilter("dashboard.services"))
+    api.setFormatter(formatter)
+
+    errors = logging.FileHandler(os.path.join(LOG_DIR, "errors.log"), mode="w")
+    errors.setLevel(logging.ERROR)
+    errors.setFormatter(formatter)
+
+    root.addHandler(stdout)
+    root.addHandler(debug)
+    root.addHandler(api)
+    root.addHandler(errors)
+
+    # suppress noisy third-party loggers
+    logging.getLogger("httpx").setLevel(logging.WARNING)
+    logging.getLogger("httpcore").setLevel(logging.WARNING)
+    logging.getLogger("streamlit").setLevel(logging.WARNING)
+    logging.getLogger("watchdog").setLevel(logging.WARNING)
+
+    _configured = True
+
+class _NameFilter(logging.Filter):
+    def __init__(self, prefix):
+        self.prefix = prefix
+
+    def filter(self, record):
+        return record.name.startswith(self.prefix)
+
+def get_logger(name: str) -> logging.Logger:
+    _configure_root()
+    return logging.getLogger(name)
