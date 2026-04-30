@@ -15,7 +15,7 @@ def _get_client() -> httpx.Client:
 
   
 def _get(endpoint: str, params: dict = None) -> dict:
-    response = _get_client().get(f"v1/{endpoint}", params=params)
+    response = _get_client().get(f"{endpoint}", params=params)
     response.raise_for_status()
     return response.json()
 
@@ -30,5 +30,13 @@ def get_weights(portfolio_name: str) -> dict:
 
 @st.cache_data(ttl=300)
 def get_portfolios() -> dict:
-    return _get(f"portfolios/")
-    
+    return _get(f"v1/portfolios/")
+
+@st.cache_data(ttl=300)
+def get_kpis(names: tuple[str, ...], sources: tuple[str, ...] = ()) -> dict:
+    params = {}
+    if names:
+        params["name"] = list(names)
+    if sources:
+        params["source"] = list(sources)
+    return _get("v1/portfolios/KPIs", params=params)

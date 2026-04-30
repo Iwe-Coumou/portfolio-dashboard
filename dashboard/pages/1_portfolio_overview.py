@@ -1,30 +1,41 @@
-from collections import defaultdict
-from dashboard.services.api import get_portfolios
+from dashboard.components.portfolio_selector import render_portfolio_selector
+from dashboard.components.kpi_cards import kpi_card
 import streamlit as st
-import streamlit_antd_components as sac
 
-portfolios = get_portfolios()  # [{"id": ..., "name": ..., "source": ...}]
+render_portfolio_selector()
 
-by_source = defaultdict(list)
-for p in portfolios:
-    by_source[p["source"]].append(p)
+kpis = st.session_state.get("kpis", {})
+if not kpis:
+    st.stop()
 
-items = [
-    sac.CasItem(source, children=[sac.CasItem(p["name"]) for p in ps])
-    for source, ps in by_source.items()
-]
+c1, c2, c3, c4 = st.columns(4)
 
-with st.sidebar:
-    selected = sac.cascader(items, multiple=True, label="Portfolios", search=True, clear=True)
+with c1:
+    kpi_card("Portfolio Value", f"€{kpis['portfolio_value']:,.2f}")
+with c2:
+    kpi_card("Holdings", str(kpis["num_holdings"]))
+with c3:
+    kpi_card("Return", f"{kpis['pct_return']:.2%}", secondary=f"€{kpis['raw_return']:+,.2f}", delta=kpis['raw_return'])
+with c4:
+    kpi_card("YTD Return", f"{kpis['ytd_pct']:.2%}", secondary=f"€{kpis['ytd_raw']:+,.2f}", delta=kpis['ytd_raw'])
 
-sources = set(by_source)
-lookup = {(p["source"], p["name"]): p["id"] for p in portfolios}
+c5, c6, c7, c8 = st.columns(4)
 
-selected_ids, src = [], None
-for label in (selected or []):
-    if label in sources:
-        src = label
-    elif src and (pid := lookup.get((src, label))):
-        selected_ids.append(pid)
+with c5:
+    kpi_card("Annualised Return", f"{kpis['annualized_return']:.2%}", delta=kpis['annualized_return'])
+with c6:
+    kpi_card("Volatility", f"{kpis['volatility']:.2%}")
+with c7:
+    kpi_card("Sharpe", f"{kpis['sharpe']:.2f}")
+with c8:
+    kpi_card("Sortino", f"{kpis['sortino']:.2f}")
 
-st.write(selected_ids)
+c9, c10, c11 = st.columns(3)
+
+with c9:
+    kpi_card("Max Drawdown", f"{kpis['max_drawdown']:.2%}",
+             secondary=f"{kpis['max_drawdown_start']} → {kpis['max_drawdown_end']}")
+with c10:
+    kpi_card("Beta", f"{kpis['beta']:.2f}")
+with c11:
+    kpi_card("vs Benchmark", f"{kpis['vs_benchmark']:+.2%}", delta=kpis['vs_benchmark'])

@@ -7,7 +7,7 @@ st.set_page_config(layout="wide", page_title="Portfolio Dashboard", page_icon="ð
 
 st.title("API Explorer")
 
-endpoint = st.text_input("Endpoint", value="portfolios/[portfolio_id]/weights")
+endpoint = st.text_input("Endpoint", value="v1/")
 
 if st.button("Run"):
     with st.spinner("Fetching from API..."):
