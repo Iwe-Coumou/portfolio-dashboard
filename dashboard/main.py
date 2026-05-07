@@ -2,12 +2,18 @@
 import streamlit as st
 import httpx
 from dashboard.services.api import _get
+from dashboard.components.sidebar import render_sidebar
+from dashboard.components.health_indicator import check_api_or_stop
 
 st.set_page_config(layout="wide", page_title="Portfolio Dashboard", page_icon="📈")
+
+check_api_or_stop()
 
 st.title("API Explorer")
 
 endpoint = st.text_input("Endpoint", value="v1/")
+
+render_sidebar()
 
 if st.button("Run"):
     with st.spinner("Fetching from API..."):

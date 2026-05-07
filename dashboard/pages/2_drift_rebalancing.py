@@ -1,7 +1,9 @@
-from dashboard.components.portfolio_selector import render_portfolio_selector
+from dashboard.components.sidebar import render_sidebar
+from dashboard.components.health_indicator import check_api_or_stop
 import streamlit as st
 
-render_portfolio_selector()
+check_api_or_stop()
+render_sidebar()
 
 if not st.session_state.get("lock_portfolios") or not st.session_state.get("selected_portfolios"):
     st.info("Select and lock portfolios on the Overview page to continue.")
