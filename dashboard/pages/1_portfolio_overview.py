@@ -1,8 +1,10 @@
-from dashboard.components.portfolio_selector import render_portfolio_selector
+from dashboard.components.sidebar import render_sidebar
+from dashboard.components.health_indicator import check_api_or_stop
 from dashboard.components.kpi_cards import kpi_card
 import streamlit as st
 
-render_portfolio_selector()
+check_api_or_stop()
+render_sidebar()
 
 kpis = st.session_state.get("kpis", {})
 if not kpis:
