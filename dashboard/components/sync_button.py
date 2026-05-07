@@ -7,9 +7,7 @@ def render_sync_button():
             try:
                 with st.spinner("Syncing backend..."):
                     sync_response = sync()
-                st.session_state['sync_response'] = sync_response
+                st.toast(sync_response["message"], icon="✅")
             except Exception as e:
                 st.error(str(e).splitlines()[0])
-        elif st.session_state.get('sync_response'):
-            st.write(st.session_state["sync_response"])
             

@@ -2,7 +2,7 @@ from dashboard.services.api import get_health
 import streamlit as st
 
 
-@st.fragment(run_every=10)
+@st.fragment(run_every=20)
 def render_health_indicator():
     health = get_health()
 
