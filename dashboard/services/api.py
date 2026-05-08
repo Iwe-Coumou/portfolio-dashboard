@@ -14,8 +14,8 @@ def _get_client() -> httpx.Client:
     )
 
   
-def _get(endpoint: str, params: dict = None) -> dict:
-    response = _get_client().get(f"{endpoint}", params=params)
+def _get(endpoint: str, params: dict = None, timeout: float = None) -> dict:
+    response = _get_client().get(f"{endpoint}", params=params, timeout=timeout)
     response.raise_for_status()
     return response.json()
 
@@ -39,7 +39,7 @@ def get_kpis(names: tuple[str, ...], sources: tuple[str, ...] = ()) -> dict:
         params["name"] = list(names)
     if sources:
         params["source"] = list(sources)
-    return _get("v1/portfolios/KPIs", params=params)
+    return _get("v1/portfolios/KPIs", params=params, timeout=120.0)
 
 def get_health() -> dict:
     try:
@@ -49,6 +49,4 @@ def get_health() -> dict:
         return {"reachable": False, "status_code": None, "data": {}}
 
 def sync() -> dict:
-    response = _get_client().get("v1/sync", timeout=120.0)
-    response.raise_for_status()
-    return response.json()
+    return _get("v1/sync", timeout=120.0)

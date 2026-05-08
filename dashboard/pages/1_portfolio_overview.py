@@ -1,13 +1,25 @@
 from dashboard.components.sidebar import render_sidebar
 from dashboard.components.health_indicator import check_api_or_stop
 from dashboard.components.kpi_cards import kpi_card
+from dashboard.services.api import get_kpis
 import streamlit as st
 
 check_api_or_stop()
 render_sidebar()
 
-kpis = st.session_state.get("kpis", {})
-if not kpis:
+selected_portfolios = st.session_state.get("selected_portfolios", [])
+locked = st.session_state.get("lock_portfolios", False)
+if not selected_portfolios or not locked:
+    st.info("Lock your portfolio selection in the sidebar to view KPIs.")
+    st.stop()
+
+try:
+    kpis = get_kpis(
+        tuple(sorted({p["name"] for p in selected_portfolios})),
+        tuple(sorted({p["source"] for p in selected_portfolios})),
+    )
+except Exception:
+    st.warning("Could not load KPIs.")
     st.stop()
 
 c1, c2, c3, c4 = st.columns(4)

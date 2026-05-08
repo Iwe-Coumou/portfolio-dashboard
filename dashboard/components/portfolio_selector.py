@@ -1,4 +1,4 @@
-from dashboard.services.api import get_portfolios, get_kpis
+from dashboard.services.api import get_portfolios
 import streamlit as st
 
 
@@ -27,10 +27,3 @@ def render_portfolio_selector():
             selected_keys = st.multiselect("Portfolios", options=sorted(lookup), default=current)
             selected_portfolios = [lookup[k] for k in selected_keys]
             st.session_state["selected_portfolios"] = selected_portfolios
-            try:
-                st.session_state["kpis"] = get_kpis(
-                    tuple({p["name"] for p in selected_portfolios}),
-                    tuple({p["source"] for p in selected_portfolios}),
-                )
-            except Exception:
-                st.warning("Could not load KPIs.")
