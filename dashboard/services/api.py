@@ -33,13 +33,8 @@ def get_portfolios() -> dict:
     return _get(f"v1/portfolios/")
 
 @st.cache_data(ttl=300, show_spinner=False)
-def get_kpis(names: tuple[str, ...], sources: tuple[str, ...] = ()) -> dict:
-    params = {}
-    if names:
-        params["name"] = list(names)
-    if sources:
-        params["source"] = list(sources)
-    return _get("v1/portfolios/KPIs", params=params, timeout=120.0)
+def get_kpis(portfolio_ids: tuple[int, ...]) -> dict:
+    return _get("v1/portfolios/KPIs", params={"portfolio_id": list(portfolio_ids)}, timeout=120.0)
 
 def get_health() -> dict:
     try:

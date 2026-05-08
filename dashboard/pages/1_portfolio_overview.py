@@ -14,10 +14,7 @@ if not selected_portfolios or not locked:
     st.stop()
 
 try:
-    kpis = get_kpis(
-        tuple(sorted({p["name"] for p in selected_portfolios})),
-        tuple(sorted({p["source"] for p in selected_portfolios})),
-    )
+    kpis = get_kpis(tuple(sorted(p["id"] for p in selected_portfolios)))
 except Exception:
     st.warning("Could not load KPIs.")
     st.stop()

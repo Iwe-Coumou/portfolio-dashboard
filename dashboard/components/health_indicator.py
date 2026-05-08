@@ -1,9 +1,15 @@
 from dashboard.services.api import get_health
 import streamlit as st
+import time
 
+_HEALTH_COOLDOWN = 20
 
-@st.fragment(run_every=20)
+@st.fragment(run_every=_HEALTH_COOLDOWN)
 def render_health_indicator():
+    last = st.session_state.get("last_health_check", 0)
+    if time.time() - last < _HEALTH_COOLDOWN:
+        return
+    st.session_state["last_health_check"] = time.time()
     health = get_health()
 
     if not health["reachable"] or health["status_code"] == 503:

@@ -8,22 +8,28 @@ def render_portfolio_selector():
     except Exception:
         st.sidebar.warning("Could not load portfolios.")
         return
+
     lookup = {f"{p['name']}@{p['source']}": p for p in portfolios}
 
-    locked = st.session_state.get("lock_portfolios", False)
+    # Remove stale keys if portfolios changed
+    valid_keys = [k for k in st.session_state.get("selected_portfolio_keys", []) if k in lookup]
+    st.session_state["selected_portfolio_keys"] = valid_keys
+
+    has_selection = bool(valid_keys)
+    if not has_selection:
+        st.session_state["lock_portfolios"] = False
 
     with st.sidebar:
-        locked = st.toggle("Lock selection", value=locked)
-        st.session_state["lock_portfolios"] = locked
+        st.toggle("Lock selection", key="lock_portfolios", disabled=not has_selection)
+        locked = st.session_state["lock_portfolios"]
 
         if locked:
-            for p in st.session_state.get("selected_portfolios", []):
+            for key in valid_keys:
+                p = lookup[key]
                 st.caption(f"{p['name']}@{p['source']}")
         else:
-            current = [
-                f"{p['name']}@{p['source']}"
-                for p in st.session_state.get("selected_portfolios", [])
-            ]
-            selected_keys = st.multiselect("Portfolios", options=sorted(lookup), default=current)
-            selected_portfolios = [lookup[k] for k in selected_keys]
-            st.session_state["selected_portfolios"] = selected_portfolios
+            st.multiselect("Portfolios", options=sorted(lookup), key="selected_portfolio_keys")
+
+    st.session_state["selected_portfolios"] = [
+        lookup[k] for k in st.session_state.get("selected_portfolio_keys", []) if k in lookup
+    ]
