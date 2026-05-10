@@ -1,13 +1,12 @@
-dashboard:
-  build:
-    context: ../portfolio-dashboard
-    dockerfile: Dockerfile
-  container_name: finance_dashboard
-  ports:
-    - "8501:8501"
-  environment:
-    - API_URL=http://host.docker.internal:8000
-    - API_KEY=${API_KEY}
-  depends_on:
-    - api
-  restart: unless-stopped
+services:
+  dashboard:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: finance_dashboard
+    ports:
+      - "8501:8501"
+    environment:
+      - API_URL=http://host.docker.internal:8000
+      - API_KEY=${API_KEY}
+    restart: unless-stopped
