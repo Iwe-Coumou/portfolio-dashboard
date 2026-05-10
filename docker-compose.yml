@@ -9,4 +9,6 @@ services:
     environment:
       - API_URL=http://host.docker.internal:8000
       - API_KEY=${API_KEY}
+    volumes:
+      - ./dashboard:/app/dashboard
     restart: unless-stopped
